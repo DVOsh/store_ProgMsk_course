@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/domain/">
+    <Project Path="domain/Store.Tests/Store.Tests.csproj" Id="a287500d-107a-4703-9012-fdd83899720c" />
     <Project Path="domain/Store/Store.csproj" />
   </Folder>
   <Folder Name="/infrastructure/">
