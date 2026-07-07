@@ -15,6 +15,9 @@ namespace Store
 
         public Book[] GetAllByQuery(string query)
         {
+            if (string.IsNullOrEmpty(query))
+                return Array.Empty<Book>();
+
             if (Book.IsIsbn(query))
                 return bookRepository.GetAllByIsbn(query);
 
