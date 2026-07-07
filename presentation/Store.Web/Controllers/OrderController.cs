@@ -14,17 +14,68 @@ namespace Store.Web.Controllers
             this.orderRepository = orderRepository;
         }
 
-        public IActionResult Index()
+        private (Order order, Cart cart) GetOrCreateOrderAndCart()
         {
+            Order order;
+
             if (HttpContext.Session.TryGetCart(out Cart cart))
             {
-                var order = orderRepository.GetById(cart.OrderId);
-                OrderModel model = Map(order);
-
-                return View(model);
+                order = orderRepository.GetById(cart.OrderId);
+            }
+            else
+            {
+                order = orderRepository.Create();
+                cart = new Cart(order.Id);
             }
 
-            return View("Empty");
+            return (order, cart);
+        }
+
+        public IActionResult AddItem(int bookId, int count)
+        {
+            (Order order, Cart cart) = GetOrCreateOrderAndCart();
+
+            var book = bookRepository.GetById(bookId);
+
+            order.AddOrUpdateItem(book, count);
+
+            SaveOrderAndCart(order, cart);
+
+            return RedirectToAction("Index", "Book", new { bookId });
+        }
+
+        [HttpPost]
+        public IActionResult UpdateItem(int bookId, int count)
+        {
+            (Order order, Cart cart) = GetOrCreateOrderAndCart();
+
+            order.GetItem(bookId).Count = count;
+
+            SaveOrderAndCart(order, cart);
+
+            return RedirectToAction("Index", "Book", new { bookId });
+        }
+
+        public IActionResult RemoveItem(int id)
+        {
+            (Order order, Cart cart) = GetOrCreateOrderAndCart();
+
+            order.RemoveItem(id);
+
+            SaveOrderAndCart(order, cart);
+
+            return RedirectToAction("Index", "Book", new { id });
+        }
+
+        private void SaveOrderAndCart(Order order, Cart cart)
+        {
+            orderRepository.Update(order);
+
+            cart.TotalCount = order.TotalCount;
+            cart.TotalPrice = order.TotalPrice;
+
+            HttpContext.Session.Set(cart);
+
         }
 
         private OrderModel Map(Order order)
@@ -51,31 +102,17 @@ namespace Store.Web.Controllers
             };
         }
 
-        public IActionResult AddItem(int id)
+        public IActionResult Index()
         {
-            Order order;
-            Cart cart;
+            if (HttpContext.Session.TryGetCart(out Cart cart))
+            {
+                var order = orderRepository.GetById(cart.OrderId);
+                OrderModel model = Map(order);
 
-            if (HttpContext.Session.TryGetCart(out cart))
-            {
-                order = orderRepository.GetById(cart.OrderId);
-            }
-            else
-            {
-                order = orderRepository.Create();
-                cart = new Cart(order.Id);
+                return View(model);
             }
 
-            var book = bookRepository.GetById(id);
-            order.AddItem(book, 1);
-            orderRepository.Update(order);
-
-            cart.TotalCount = order.TotalCount;
-            cart.TotalPrice = order.TotalPrice;
-
-            HttpContext.Session.Set(cart);
-
-            return RedirectToAction("Index", "Book", new { id });
+            return View("Empty");
         }
     }
 }
