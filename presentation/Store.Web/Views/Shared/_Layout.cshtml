@@ -23,19 +23,15 @@
             </form>
             <span class="navbar-text ms-auto">
                 @{
-                        Cart cart;
-                        if (!Context.Session.TryGetCart(out cart))
-                            cart = new Cart();
-
-                        if (cart.Items.Count == 0)
-                        {
-                            @:Корзина пуста
-                        }
-                        else 
-                        {
-                            @:Товаров @cart.Items.Count на сумму @cart.Amount
-                        }
+                    if (Context.Session.TryGetCart(out Cart cart) && cart.TotalCount > 0)
+                    {
+                        <a href="">Товаров @cart.TotalCount на сумму @cart.TotalPrice</a>
                     }
+                    else
+                    {
+                        @:Корзина пуста
+                    }                        
+                }
             </span>
         </nav>
     </header>
