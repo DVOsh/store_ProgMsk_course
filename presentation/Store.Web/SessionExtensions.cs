@@ -47,5 +47,10 @@ namespace Store.Web
             value = null;
             return false;
         }
+
+        public static void RemoveCart(this ISession session)
+        {
+            session.Remove(key);
+        }
     }
 }

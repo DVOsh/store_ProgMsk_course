@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Store.Contractors;
 using Store.Messages;
+using Store.Web.Contractors;
 using Store.Web.Models;
 using System.Text.RegularExpressions;
 
@@ -12,18 +13,21 @@ namespace Store.Web.Controllers
         private readonly IOrderRepository orderRepository;
         private readonly IEnumerable<IDeliveryService> deliveryServices;
         private readonly IEnumerable<IPaymentService> paymentServices;
+        private readonly IEnumerable<IWebContractorService> webContractorServices; 
         private readonly INotificationService notificationService;
 
         public OrderController(IBookRepository bookRepository, 
                                 IOrderRepository orderRepository,
                                 IEnumerable<IDeliveryService> deliveryServices,
                                 IEnumerable<IPaymentService> paymentServices,
+                                IEnumerable<IWebContractorService> webContractorServices,
                                 INotificationService notificationService)
         {
             this.bookRepository = bookRepository;
             this.orderRepository = orderRepository;
             this.deliveryServices = deliveryServices;
             this.paymentServices = paymentServices;
+            this.webContractorServices = webContractorServices;
             this.notificationService = notificationService;
         }
 
@@ -169,8 +173,9 @@ namespace Store.Web.Controllers
             var model = new DeliveryModel
             {
                 OrderId = id,
-                Methods = deliveryServices.ToDictionary(service => service.UniqueCode,
-                                                      service => service.Title)
+                Methods = deliveryServices
+                         .ToDictionary(service => service.UniqueCode,
+                                       service => service.Title)
             };
 
             return View("DeliveryMethod", model);
@@ -179,7 +184,8 @@ namespace Store.Web.Controllers
         [HttpPost]
         public IActionResult StartDelivery(int id, string uniqueCode)
         {
-            var deliveryService = deliveryServices.Single(service => service.UniqueCode == uniqueCode);
+            var deliveryService = deliveryServices
+                                 .Single(service => service.UniqueCode == uniqueCode);
             var order = orderRepository.GetById(id);
 
             var form = deliveryService.CreateForm(order);
@@ -188,9 +194,13 @@ namespace Store.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult NextDelivery(int id, string uniqueCode, int step, Dictionary<string, string> values)
+        public IActionResult NextDelivery(int id, 
+                                          string uniqueCode, 
+                                          int step, 
+                                          Dictionary<string, string> values)
         {
-            var deliveryService = deliveryServices.Single(service => service.UniqueCode == uniqueCode);
+            var deliveryService = deliveryServices
+                                 .Single(service => service.UniqueCode == uniqueCode);
 
             var form = deliveryService.MoveNextForm(id, step, values);
 
@@ -203,8 +213,9 @@ namespace Store.Web.Controllers
                 var model = new DeliveryModel
                 {
                     OrderId = id,
-                    Methods = paymentServices.ToDictionary(service => service.UniqueCode,
-                                                           service => service.Title)
+                    Methods = paymentServices
+                             .ToDictionary(service => service.UniqueCode,
+                                           service => service.Title)
                 };
 
                 return View("PaymentMethod", model);
@@ -215,18 +226,30 @@ namespace Store.Web.Controllers
 
         public IActionResult StartPayment(int id, string uniqueCode)
         {
-            var paymentService = paymentServices.Single(service => service.UniqueCode == uniqueCode);
+            var paymentService = paymentServices
+                                .Single(service => service.UniqueCode == uniqueCode);
             var order = orderRepository.GetById(id);
 
             var form = paymentService.CreateForm(order);
+
+            var webContractorService = webContractorServices
+                                      .SingleOrDefault(service => 
+                                       service.UniqueCode == uniqueCode);
+            if (webContractorService != null)
+                return Redirect(webContractorService.GetUri);
+
 
             return View("PaymentStep", form);
         }
 
         [HttpPost]
-        public IActionResult NextPayment(int id, string uniqueCode, int step, Dictionary<string, string> values)
+        public IActionResult NextPayment(int id, 
+                                         string uniqueCode, 
+                                         int step, 
+                                         Dictionary<string, string> values)
         {
-            var paymentService = paymentServices.Single(service => service.UniqueCode == uniqueCode);
+            var paymentService = paymentServices
+                                .Single(service => service.UniqueCode == uniqueCode);
 
             var form = paymentService.MoveNextForm(id, step, values);
 
@@ -240,6 +263,13 @@ namespace Store.Web.Controllers
             }
 
             return View("PaymentStep", form);
+        }
+
+        public IActionResult Finish()
+        {
+            HttpContext.Session.RemoveCart();
+
+            return View();
         }
 
         private OrderModel Map(Order order)
