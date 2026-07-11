@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/application/">
+    <Project Path="application/Store.Web.App/Store.Web.App.csproj" Id="e54d1cdb-cf6b-49a5-989d-e7040c977917" />
+  </Folder>
   <Folder Name="/domain/">
     <Project Path="domain/Store.Tests/Store.Tests.csproj" Id="a287500d-107a-4703-9012-fdd83899720c" />
     <Project Path="domain/Store/Store.csproj" />
