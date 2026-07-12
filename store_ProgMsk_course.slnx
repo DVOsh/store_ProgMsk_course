@@ -6,7 +6,9 @@
     <Project Path="domain/Store.Tests/Store.Tests.csproj" Id="a287500d-107a-4703-9012-fdd83899720c" />
     <Project Path="domain/Store/Store.csproj" />
   </Folder>
-  <Folder Name="/infrastructure/" />
+  <Folder Name="/infrastructure/">
+    <Project Path="infrastructure/Store.Data.EF/Store.Data.EF.csproj" Id="17147b62-ba97-4cb9-be39-cdebdd10214c" />
+  </Folder>
   <Folder Name="/plugins/">
     <Project Path="plugins/Store.YandexKassa/Store.YandexKassa.csproj" Id="2edbf0be-959a-49c1-8c47-b410a32165d9" />
   </Folder>
