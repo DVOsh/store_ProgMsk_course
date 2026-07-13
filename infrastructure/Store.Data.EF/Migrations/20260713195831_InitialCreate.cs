@@ -7,7 +7,7 @@
 namespace Store.Data.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class InttialCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

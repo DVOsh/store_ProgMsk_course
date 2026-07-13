@@ -11,8 +11,8 @@ using Store.Data.EF;
 namespace Store.Data.EF.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20260712155334_InttialCreate")]
-    partial class InttialCreate
+    [Migration("20260713195831_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
