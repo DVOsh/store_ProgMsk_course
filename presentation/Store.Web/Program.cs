@@ -1,7 +1,7 @@
-using Store;
 using Store.Contractors;
 using Store.Data.EF;
 using Store.Messages;
+using Store.Web;
 using Store.Web.App;
 using Store.Web.Contractors;
 using Store.YandexKassa;
@@ -9,7 +9,10 @@ using Store.YandexKassa;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(typeof(ExceptionFilter));
+});
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -32,12 +35,12 @@ builder.Services.AddSingleton<OrderService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
+//if (!app.Environment.IsDevelopment())
+//{
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-}
+//}
 
 app.UseHttpsRedirection();
 app.UseRouting();
