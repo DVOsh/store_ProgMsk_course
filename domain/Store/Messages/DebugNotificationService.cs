@@ -17,19 +17,19 @@ namespace Store.Messages
         {
             Debug.WriteLine("Order ID {0}", order.Id);
 
-            using var client = new SmtpClient();
-            var message = new MailMessage("from@at.my.domain", "to@at.my.domain");
-            message.Subject = "Заказ #" + order.Id;
+            //using var client = new SmtpClient();
+            //var message = new MailMessage("from@at.my.domain", "to@at.my.domain");
+            //message.Subject = "Заказ #" + order.Id;
 
-            var builder = new StringBuilder();
-            foreach(var item in order.Items)
-            {
-                builder.Append("{0}, {1}", item.BookId, item.Count);
-                builder.AppendLine();
-            }
+            //var builder = new StringBuilder();
+            //foreach(var item in order.Items)
+            //{
+            //    builder.Append("{0}, {1}", item.BookId, item.Count);
+            //    builder.AppendLine();
+            //}
 
-            message.Body = builder.ToString();
-            client.Send(message);
+            //message.Body = builder.ToString();
+            //client.Send(message);
         }
     }
 }
