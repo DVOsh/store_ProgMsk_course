@@ -31,5 +31,19 @@ namespace Store.Messages
             //message.Body = builder.ToString();
             //client.Send(message);
         }
+
+        public Task StartProcessAsync(Order order)
+        {
+            StartProcess(order);
+
+            return Task.CompletedTask;
+        }
+
+        public Task SendConfirmationCodeAsync(string cellPhone, int code)
+        {
+            Debug.WriteLine("Cell phone: {0}, code: {1:0000}.", cellPhone, code);
+
+            return Task.CompletedTask;
+        }
     }
 }
